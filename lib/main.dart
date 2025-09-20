@@ -16,27 +16,38 @@ class TaskApp extends StatelessWidget {
   }
 }
 
-class TaskListPage extends StatelessWidget {
+class TaskListPage extends StatefulWidget {
   const TaskListPage({super.key});
 
-  static final _demoTasks = [
+  @override
+  State<TaskListPage> createState() => _TaskListPageState();
+}
+
+class _TaskListPageState extends State<TaskListPage> {
+  final List<Map<String, dynamic>> _demoTasks = [
     {
       'title': 'Write unit tests',
       'description': 'Cover TaskCard widget and interactive behavior.',
-      'priority': 'High',
+      'priority': 'Medium',
       'date': '23/09/2025',
+      'name': 'Mark',
+      'isImportant': false, // 👈 added
     },
     {
       'title': 'Refactor auth',
       'description': 'Move logic into a reusable AuthService and clean up UI.',
       'priority': 'Low',
       'date': '26/09/2025',
+      'name': 'Pierre',
+      'isImportant': false,
     },
     {
       'title': 'Design review',
       'description': 'Prepare slides for Friday review with product.',
       'priority': 'High',
       'date': '02/10/2025',
+      'name': 'Arjay',
+      'isImportant': true,
     },
   ];
 
@@ -54,58 +65,58 @@ class TaskListPage extends StatelessWidget {
             title: t['title']!,
             description: t['description']!,
             priority: t['priority']!,
-            dateLabel: t['date']!,
+            assignee: t['name']!,
+            isImportant: t['isImportant'],
+            onToggleImportant: () {
+              setState(() {
+                _demoTasks[i]['isImportant'] = !_demoTasks[i]['isImportant'];
+              });
+            },
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _openAddModal(context),
-        child: const Icon(Icons.add),
-      ),
     );
   }
+}
 
-  void _openAddModal(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (_) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('Add Task', style: Theme.of(context).textTheme.titleLarge),
-                const SizedBox(height: 12),
-                const TextField(
-                  decoration: InputDecoration(labelText: 'Title'),
-                ),
-                const SizedBox(height: 8),
-                const TextField(
-                  maxLines: 2,
-                  decoration: InputDecoration(labelText: 'Description'),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Create (UI only)'),
-                      ),
+void _openAddModal(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    builder: (_) {
+      return Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Add Task', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 12),
+              const TextField(decoration: InputDecoration(labelText: 'Title')),
+              const SizedBox(height: 8),
+              const TextField(
+                maxLines: 2,
+                decoration: InputDecoration(labelText: 'Description'),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Create (UI only)'),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-              ],
-            ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
 }

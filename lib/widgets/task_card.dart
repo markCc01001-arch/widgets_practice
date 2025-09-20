@@ -10,6 +10,9 @@ class TaskCard extends StatelessWidget {
   final String description;
   final String priority;
   final String dateLabel; // <-- new
+  final String assignee;
+  final bool isImportant;
+  final VoidCallback? onToggleImportant; // 👈 new
 
   const TaskCard({
     super.key,
@@ -17,63 +20,81 @@ class TaskCard extends StatelessWidget {
     required this.description,
     required this.priority,
     this.dateLabel = 'Today', // <-- default fallback
+    required this.assignee,
+    this.isImportant = false,
+    this.onToggleImportant, // 👈 optional callback
   });
+  Color _priorityColor(String priority) {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      default:
+        return Colors.green;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
-                      // small hint to show composition: IconLabel can be reused elsewhere
-                      IconLabel(
-                        icon: Icons.event,
-                        label: dateLabel,
-                        iconColor: Color.fromRGBO(19, 144, 175, 1),
-                      ),
-                    ],
+            // Row: Priority badge + Important star
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _PriorityBadge(priority: priority),
+                IconButton(
+                  icon: Icon(
+                    isImportant ? Icons.star : Icons.star_border,
+                    color: isImportant ? Colors.amber : Colors.grey,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 14),
-                  Row(
-                    children: [
-                      IconLabel(
-                        icon: Icons.chat_bubble_outline,
-                        label: '3 comments',
-                        iconColor: Color.fromRGBO(19, 144, 175, 1),
-                      ),
-                      const SizedBox(width: 32),
-                      IconLabel(
-                        icon: Icons.task_alt,
-                        label: '1 done',
-                        iconColor: Color.fromRGBO(19, 144, 175, 1),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                  onPressed: onToggleImportant, // 👈 call parent
+                ),
+              ],
             ),
-            const SizedBox(width: 12),
-            _PriorityBadge(priority: priority),
+
+            const SizedBox(height: 8),
+
+            // Title
+            Text(
+              title,
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 6),
+
+            // Assignee + Due Date
+            Row(
+              children: [
+                IconLabel(
+                  icon: Icons.person,
+                  label: assignee,
+                  iconColor: Colors.blue,
+                ),
+                const SizedBox(width: 16),
+                IconLabel(
+                  icon: Icons.event,
+                  label: dateLabel,
+                  iconColor: _priorityColor(priority),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            // Description
+            Text(description, maxLines: 2, overflow: TextOverflow.ellipsis),
+
+            const SizedBox(height: 10),
           ],
         ),
       ),
@@ -86,21 +107,27 @@ class _PriorityBadge extends StatelessWidget {
   final String priority;
   const _PriorityBadge({super.key, required this.priority});
 
-  Color get _color =>
-      priority.toLowerCase() == 'high' ? Colors.red : Colors.green;
+  Color get _color {
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return Colors.red;
+      case 'medium':
+        return Colors.orange;
+      default:
+        return Colors.green;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: _color.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
+    return Chip(
+      backgroundColor: _color.withOpacity(0.15),
+      label: Text(
         priority,
-        style: TextStyle(color: _color, fontWeight: FontWeight.w600),
+        style: TextStyle(color: _color, fontWeight: FontWeight.bold),
       ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      side: BorderSide.none, // 👈 explicitly removes the outline
     );
   }
 }
