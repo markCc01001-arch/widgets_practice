@@ -24,6 +24,7 @@ class TaskListPage extends StatefulWidget {
 }
 
 class _TaskListPageState extends State<TaskListPage> {
+  String _selectedFilter = "All";
   final List<Map<String, dynamic>> _demoTasks = [
     {
       'title': 'Write unit tests',
@@ -53,8 +54,71 @@ class _TaskListPageState extends State<TaskListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final filteredTasks = _selectedFilter == "All"
+        ? _demoTasks
+        : _demoTasks.where((t) => t['priority'] == _selectedFilter).toList();
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Tasks')),
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 236, 200, 39),
+        title: const Text(
+          'Tasks',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold, // 👈 make "Tasks" bold
+          ),
+        ),
+        actions: [
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: _selectedFilter,
+              hint: const Text(
+                "All",
+                style: TextStyle(color: Colors.white), // 👈 hint text white
+              ),
+              items: const [
+                DropdownMenuItem(
+                  value: "All",
+                  child: Text(
+                    "All",
+                    style: TextStyle(color: Colors.white),
+                  ), // 👈
+                ),
+                DropdownMenuItem(
+                  value: "Low",
+                  child: Text("Low", style: TextStyle(color: Colors.white)),
+                ),
+                DropdownMenuItem(
+                  value: "Medium",
+                  child: Text("Medium", style: TextStyle(color: Colors.white)),
+                ),
+                DropdownMenuItem(
+                  value: "High",
+                  child: Text("High", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedFilter = value;
+                  });
+                }
+              },
+              icon: const Icon(
+                Icons.arrow_drop_down,
+                color: Color.fromARGB(255, 236, 205, 30),
+              ),
+              dropdownColor: const Color.fromARGB(
+                255,
+                255,
+                210,
+                85,
+              ), // 👈 dropdown bg
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(12),
         itemCount: _demoTasks.length,
@@ -66,6 +130,7 @@ class _TaskListPageState extends State<TaskListPage> {
             description: t['description']!,
             priority: t['priority']!,
             assignee: t['name']!,
+            dateLabel: t['date']!,
             isImportant: t['isImportant'],
             onToggleImportant: () {
               setState(() {
@@ -75,48 +140,66 @@ class _TaskListPageState extends State<TaskListPage> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _openAddModal(context),
+        child: const Icon(Icons.add),
+      ),
     );
   }
-}
 
-void _openAddModal(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    builder: (_) {
-      return Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Add Task', style: Theme.of(context).textTheme.titleLarge),
-              const SizedBox(height: 12),
-              const TextField(decoration: InputDecoration(labelText: 'Title')),
-              const SizedBox(height: 8),
-              const TextField(
-                maxLines: 2,
-                decoration: InputDecoration(labelText: 'Description'),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text('Create (UI only)'),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-            ],
+  void _openAddModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
           ),
-        ),
-      );
-    },
-  );
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Add Task', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 12),
+                const TextField(
+                  decoration: InputDecoration(labelText: 'Title'),
+                ),
+                const SizedBox(height: 8),
+                const TextField(
+                  maxLines: 2,
+                  decoration: InputDecoration(labelText: 'Description'),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Show snackbar
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("(UI-only) Task created"),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+
+                          // Close modal
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Create (UI only)'),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

@@ -39,6 +39,8 @@ class TaskCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
+      color: const Color.fromARGB(255, 255, 237, 155),
+
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -53,7 +55,9 @@ class TaskCard extends StatelessWidget {
                 IconButton(
                   icon: Icon(
                     isImportant ? Icons.star : Icons.star_border,
-                    color: isImportant ? Colors.amber : Colors.grey,
+                    color: isImportant
+                        ? const Color.fromARGB(255, 255, 166, 0)
+                        : Colors.grey,
                   ),
                   onPressed: onToggleImportant, // 👈 call parent
                 ),
