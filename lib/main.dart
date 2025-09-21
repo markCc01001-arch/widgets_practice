@@ -27,26 +27,48 @@ class _TaskListPageState extends State<TaskListPage> {
   String _selectedFilter = "All";
   final List<Map<String, dynamic>> _demoTasks = [
     {
-      'title': 'Write unit tests',
-      'description': 'Cover TaskCard widget and interactive behavior.',
-      'priority': 'Medium',
+      'title': 'Feed the dog',
+      'description':
+          'Give the dog its meal (food and clean water) at the scheduled time to keep it healthy and happy.',
+      'priority': 'High',
       'date': '23/09/2025',
-      'name': 'Mark',
-      'isImportant': false, // 👈 added
+      'name': 'Joshua',
+      'isImportant': false, //
     },
     {
-      'title': 'Refactor auth',
-      'description': 'Move logic into a reusable AuthService and clean up UI.',
+      'title': 'Do homework',
+      'description':
+          'Complete the assigned exercises or readings for each subject before the deadline to stay prepared for class.',
       'priority': 'Low',
       'date': '26/09/2025',
       'name': 'Pierre',
       'isImportant': false,
     },
     {
-      'title': 'Design review',
-      'description': 'Prepare slides for Friday review with product.',
-      'priority': 'High',
+      'title': 'Clean my room',
+      'description':
+          'Organize books and clothes, sweep or vacuum the floor, and make the bed to keep the room tidy',
+      'priority': 'Medium',
       'date': '02/10/2025',
+      'name': 'Mark',
+      'isImportant': true,
+    },
+
+    {
+      'title': 'Study for exams',
+      'description':
+          'Review notes, practice sample questions, and summarize key topics to prepare for upcoming tests.',
+      'priority': 'High',
+      'date': '23/9/2025',
+      'name': 'Joshua',
+      'isImportant': true,
+    },
+    {
+      'title': 'Wash the dishes',
+      'description':
+          'Clean the used plates, glasses, and utensils, then dry and return them to their proper places.',
+      'priority': 'Medium',
+      'date': '02/9/2025',
       'name': 'Arjay',
       'isImportant': true,
     },
@@ -63,19 +85,13 @@ class _TaskListPageState extends State<TaskListPage> {
         backgroundColor: const Color.fromARGB(255, 236, 200, 39),
         title: const Text(
           'Tasks',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold, // 👈 make "Tasks" bold
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
           DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedFilter,
-              hint: const Text(
-                "All",
-                style: TextStyle(color: Colors.white), // 👈 hint text white
-              ),
+              hint: const Text("All", style: TextStyle(color: Colors.white)),
               items: const [
                 DropdownMenuItem(
                   value: "All",
